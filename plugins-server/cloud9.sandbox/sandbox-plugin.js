@@ -75,7 +75,7 @@ module.exports = function(options, imports, register) {
 	var portAssignmentServer = null;
 	if (options.portAssignmentServerPort && options.portAssignmentServerPort !== null)
 	{
-		portAssignmentServer = new PortAssignmentServer(options.portAssignmentPort);
+		portAssignmentServer = new PortAssignmentServer(options.portAssignmentServerPort);
 	}
     register(null, {
         sandbox: {
