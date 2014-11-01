@@ -2,6 +2,7 @@
 
 var assert = require("assert");
 var netutil = require("netutil");
+var url = require("url");
 
 module.exports = function(options, imports, register) {
 
@@ -25,6 +26,13 @@ module.exports = function(options, imports, register) {
                 // grab a free port
                 netutil.findFreePort(20000, 64000, options.host, function (err, port) {
 					console.log("FOUND FREE PORT: "+port+" workspaceId:\""+options.workspaceId+"\" host:\"" +options.host+"\" projectDir:\""+options.projectDir+"\" portassignerurl:\""+options.portAssignerURL+"\"");
+					if (options.portAssignerURL && options.portAssignerURL !== null){
+						var portAssignerURL = url.parse(options.portAssignerURL);
+						if (!portAssignerURL.query)
+							portAssignerURL.query = {};
+						portAssignerURL.query.workspaceId = options.workspaceId;
+						console.log(url.format(portAssignerURL));
+					}
                     callback(err, port);
                 });
             },
