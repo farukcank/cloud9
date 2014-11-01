@@ -38,6 +38,7 @@ function PortAssignmentServer(port){
 		self.currentClient.end();
 	  }	  
 	  self.currentClient = c;
+	  c.write("ready\n");
 	  console.log("Port assigner connected");
 	});
 	self.requestPort = function(callback){
@@ -63,6 +64,7 @@ function PortAssignmentServer(port){
 		}
 	}
 	self.server.listen(port);
+	console.log("Port assignment server started at port "+port);
 }
 
 module.exports = function(options, imports, register) {
