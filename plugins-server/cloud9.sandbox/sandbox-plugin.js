@@ -31,9 +31,12 @@ function getPortFromRemote(options, callback){
 		console.log(str);
 	  });
 	};
-
-	var req = http.request(options, cb);
-	req.end();	
+	try{
+		var req = http.request(options, cb);
+		req.end();	
+	}catch(err){
+		callback(error, 0);
+	}
 }
 module.exports = function(options, imports, register) {
 
