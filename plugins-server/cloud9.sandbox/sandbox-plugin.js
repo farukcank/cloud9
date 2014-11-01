@@ -54,7 +54,6 @@ module.exports = function(options, imports, register) {
                 callback(null, options.unixId || null);
             },
             getPort: function(callback) {
-				console.log("FOUND FREE PORT: "+port+" workspaceId:\""+options.workspaceId+"\" host:\"" +options.host+"\" projectDir:\""+options.projectDir+"\" portassignerurl:\""+options.portAssignerURL+"\"");
 				if (options.portAssignerURL && options.portAssignerURL !== null){
 					getPortFromRemote(options, function(err, port){
 						if (err)
