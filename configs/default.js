@@ -26,7 +26,7 @@ var vfsUrl = "/vfs";
 var port = argv.p || process.env.PORT || 3131;
 var host = argv.l || process.env.IP || "localhost";
 var debugPort = argv.b || process.env.DEBUG_PORT || 5858;
-var portAssignerURL = argv.portAssignerURL;
+var portAssignmentServerPort = argv.portAssignmentServerPort;
 var workspaceId = argv.workspaceId || "Cloud 9";
 
 var useAuth = argv.username && argv.password;
@@ -63,7 +63,7 @@ var config = [
         userDir: null, // is this always there??
         unixId: null,
         host: host,
-		portAssignerURL:portAssignerURL
+		portAssignmentServerPort:portAssignmentServerPort
     }, {
         packagePath: "./cloud9.core",
         debug: false,

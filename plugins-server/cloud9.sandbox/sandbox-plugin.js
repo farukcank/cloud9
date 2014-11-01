@@ -2,48 +2,79 @@
 
 var assert = require("assert");
 var netutil = require("netutil");
-var url = require("url");
-var http = require("http");
-function getPortFromRemote(options, callback){
-	var portAssignerURL = url.parse(options.portAssignerURL);
-	if (!portAssignerURL.query)
-		portAssignerURL.query = {};
-	portAssignerURL.query.workspaceId = options.workspaceId;
-	portAssignerURL = url.parse(url.format(portAssignerURL));
-	var reqOptions = {};	
-	reqOptions.hostname = portAssignerURL.host;
-	reqOptions.port = portAssignerURL.port;
-	reqOptions.path = portAssignerURL.path;	
-	
-	var cb = function(response) {
-	  var str = ''
-	  response.on('data', function (chunk) {
-		str += chunk;
-	  });
+var net = require('net');
 
-	  response.on('end', function () {
-		if (response.statusCode!=200){
-			var error = new Error("Response code: " + res.statusCode + " for : "+path);
-			callback(error, 0);
-		} else {
-			callback(null, parseInt(str));
+function PortAssignmentServer(port){
+	var self = this;	
+	self.currentClient = null;
+	self.currentCallback = null;
+	self.currentData = "";
+	self.portReceived = function(port){
+		if (self.currentCallback !== null){
+			currentCallback(null, port);
 		}
-		console.log(str);
-	  });
 	};
-	var req = http.request(options, cb);
-	req.on('error',function (err){
-		callback(err, 0);
+	self.processData = function(){
+		var index = self.data.indexOf('\n');
+		if (index >= 0){
+			var port = parseInt(self.data.substring(0, index));
+			self.portReceived(port);
+			data = data.substring(index+1);
+			self.processData();
+		}
+	};
+	self.server = net.createServer(function(c) {
+	  c.on('end', function() {		
+		if (self.currentClient === c){
+			self.currentClient = null;
+			console.log("Port assigner disconnected");
+		}
+	  });
+	  client.on('data', function(data) {
+		self.currentData = self.currentData + data;
+		self.processData();
+	  });
+	  if (self.currentClient !== null){
+		self.currentClient.end();
+	  }	  
+	  self.currentClient = c;
+	  console.log("Port assigner connected");
 	});
-	req.end();
+	self.requestPort = function(callback){
+		if (self.currentCallback !== null){
+			var error = new Error("There is a pending port request");
+			setTimeout(function(){callback(error, 0);},0);
+		}else if (self.currentClient !== null){
+			self.currentClient.write("newportrequired\n");
+			var fulfilled = false;
+			self.currentCallback = function(err, port){
+				fulfilled = true;
+				callback(err, port);
+			}
+			setTimeout(function(){
+				if (!fulfilled){
+					var error = new Error("Timeout");
+					callback(error, 0);
+				}
+			}, 5000);
+		}else{
+			var error = new Error("No port assigner available");
+			setTimeout(function(){callback(error, 0);}, 0);
+		}
+	}
+	self.server.listen(options.portAssignmentPort);
 }
-module.exports = function(options, imports, register) {
 
+module.exports = function(options, imports, register) {
     assert(options.workspaceId, "option 'workspaceId' is required");
     assert(options.projectDir, "option 'projectDir' is required");
     // assert(options.userDir, "option 'userDir' is required");
     assert(options.host, "option 'host' is required");
-
+	var portAssignmentServer = undefined;
+	if (options.portAssignmentServerPort && options.portAssignmentServerPort !== null)
+	{
+		portAssignmentServer = new PortAssignmentServer();
+	}
     register(null, {
         sandbox: {
             getProjectDir: function(callback) {
@@ -56,13 +87,8 @@ module.exports = function(options, imports, register) {
                 callback(null, options.unixId || null);
             },
             getPort: function(callback) {
-				if (options.portAssignerURL && options.portAssignerURL !== null){
-					getPortFromRemote(options, function(err, port){
-						if (err)
-							console.log(err);
-						console.log(port);
-						callback(err, port);
-					});
+				if (portAssignmentServer){
+					portAssignmentServer.requestPort(callback);
 				}else{
 					// grab a free port
 					netutil.findFreePort(20000, 64000, options.host, function (err, port) {					
