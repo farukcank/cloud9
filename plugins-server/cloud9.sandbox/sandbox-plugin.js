@@ -62,7 +62,7 @@ function PortAssignmentServer(port){
 			setTimeout(function(){callback(error, 0);}, 0);
 		}
 	}
-	self.server.listen(options.portAssignmentPort);
+	self.server.listen(port);
 }
 
 module.exports = function(options, imports, register) {
@@ -70,10 +70,10 @@ module.exports = function(options, imports, register) {
     assert(options.projectDir, "option 'projectDir' is required");
     // assert(options.userDir, "option 'userDir' is required");
     assert(options.host, "option 'host' is required");
-	var portAssignmentServer = undefined;
+	var portAssignmentServer = null;
 	if (options.portAssignmentServerPort && options.portAssignmentServerPort !== null)
 	{
-		portAssignmentServer = new PortAssignmentServer();
+		portAssignmentServer = new PortAssignmentServer(options.portAssignmentPort);
 	}
     register(null, {
         sandbox: {
@@ -87,7 +87,7 @@ module.exports = function(options, imports, register) {
                 callback(null, options.unixId || null);
             },
             getPort: function(callback) {
-				if (portAssignmentServer){
+				if (portAssignmentServer !== null){
 					portAssignmentServer.requestPort(callback);
 				}else{
 					// grab a free port
