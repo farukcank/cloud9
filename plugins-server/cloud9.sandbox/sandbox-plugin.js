@@ -8,7 +8,7 @@ function PortAssignmentServer(port){
 	var self = this;	
 	self.currentClient = null;
 	self.currentCallback = null;
-	self.currentData = "";
+	self.data = "";
 	self.portReceived = function(port){
 		if (self.currentCallback !== null){
 			currentCallback(null, port);
@@ -31,7 +31,7 @@ function PortAssignmentServer(port){
 		}
 	  });
 	  c.on('data', function(data) {
-		self.currentData = self.currentData + data;
+		self.data = self.data + data;
 		self.processData();
 	  });
 	  if (self.currentClient !== null){
