@@ -11,7 +11,8 @@ function PortAssignmentServer(port){
 	self.data = "";
 	self.portReceived = function(port){
 		if (self.currentCallback !== null){
-			currentCallback(null, port);
+			self.currentCallback(null, port);
+			self.currentCallback = null;
 		}
 	};
 	self.processData = function(){
