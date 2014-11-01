@@ -24,6 +24,7 @@ module.exports = function(options, imports, register) {
             getPort: function(callback) {
                 // grab a free port
                 netutil.findFreePort(20000, 64000, options.host, function (err, port) {
+					console.log("FOUND FREE PORT: "+port);
                     callback(err, port);
                 });
             },

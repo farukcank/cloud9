@@ -72,8 +72,8 @@ module.exports = function setup(options, imports, register) {
                         if (!msg)
                             return;
 
-                        if (!res.headerSent)
-                            res.writeHead(200, { "content-type": "text/plain" });
+                        //if (!res.headerSent)
+                        //    res.writeHead(200, { "content-type": "text/plain" });
                         res.write(msg);
                     },
                     // process exit
