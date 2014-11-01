@@ -20,7 +20,7 @@ function PortAssignmentServer(port){
 		if (index >= 0){
 			var port = parseInt(self.data.substring(0, index));
 			self.portReceived(port);
-			data = data.substring(index+1);
+			self.data = self.data.substring(index+1);
 			self.processData();
 		}
 	};
