@@ -30,7 +30,7 @@ function PortAssignmentServer(port){
 			console.log("Port assigner disconnected");
 		}
 	  });
-	  client.on('data', function(data) {
+	  c.on('data', function(data) {
 		self.currentData = self.currentData + data;
 		self.processData();
 	  });
