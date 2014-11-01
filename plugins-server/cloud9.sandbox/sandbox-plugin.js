@@ -17,9 +17,6 @@ function getPortFromRemote(options, callback){
 	
 	var cb = function(response) {
 	  var str = ''
-	  response.on('error',function (err){
-		callback(err, 0);
-	  });
 	  response.on('data', function (chunk) {
 		str += chunk;
 	  });
@@ -35,6 +32,9 @@ function getPortFromRemote(options, callback){
 	  });
 	};
 	var req = http.request(options, cb);
+	req.on('error',function (err){
+		callback(err, 0);
+	});
 	req.end();
 }
 module.exports = function(options, imports, register) {
