@@ -30,8 +30,7 @@ function PortAssignmentServer(port){
 	self.processData = function(){
 		var index = self.data.indexOf('\n');
 		if (index >= 0){
-			var port = parseInt(self.data.substring(0, index));
-			self.portReceived(port);
+			self.processCommand(self.data.substring(0, index));			
 			self.data = self.data.substring(index+1);
 			self.processData();
 		}
