@@ -15,6 +15,18 @@ function PortAssignmentServer(port){
 			self.currentCallback = null;
 		}
 	};
+	self.hostReceived = function(host){
+		self.host = host;
+	};
+	self.processCommand = function(command){
+		var portCommandStart = 'port:';
+		var hostCommandStart = 'host:';
+		if (command.indexOf(portCommandStart)==0){
+			self.portReceived(parseInt(command.substring(portCommandStart.length)));
+		}else if (command.indexOf(hostCommandStart)==0){
+			self.hostReceived(command.substring(hostCommandStart.length));
+		}
+	};
 	self.processData = function(){
 		var index = self.data.indexOf('\n');
 		if (index >= 0){
@@ -100,7 +112,7 @@ module.exports = function(options, imports, register) {
 				}
             },
             getHost: function(callback) {
-                callback(null, options.host);
+                callback(null, portAssignmentServer.host || options.host);
             },
             getUserDir: function(callback) {
                 callback(null, options.userDir);
